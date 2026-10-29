@@ -40,7 +40,7 @@
 **Tính năng** (mỗi dòng = 1 nhánh, đủ các bước 1–9 ở trên)
 - [x] 3.1 2.1.1 Đăng ký
 - [x] 3.2 2.1.2 Đăng nhập
-- [ ] 3.3 2.1.3 Hồ sơ cá nhân
+- [x] 3.3 2.1.3 Hồ sơ cá nhân
 - [ ] 3.4 2.2.1 Quản lý thể loại sách
 - [ ] 3.5 2.2.2 Thêm sách mới
 - [ ] 3.6 2.2.3 Xem danh sách sách
