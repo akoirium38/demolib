@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import { prisma } from '../lib/prisma.js';
 import { AppError } from '../utils/AppError.js';
 import { toUserDto } from '../utils/serializers.js';
+import { signToken, tokenTtlSeconds } from '../utils/jwt.js';
 
 const BCRYPT_COST = 10;
 const emailExists = () => AppError.conflict('EMAIL_EXISTS', 'Email đã được sử dụng');
@@ -22,4 +23,19 @@ export const register = async ({ email, name, password }) => {
     if (err?.code === 'P2002') throw emailExists();
     throw err;
   }
+};
+
+const invalidCredentials = () =>
+  new AppError(401, 'INVALID_CREDENTIALS', 'Email hoặc mật khẩu không đúng');
+
+// 2.1.2 — input đã qua loginSchema (email trim + lowercase)
+export const login = async ({ email, password }) => {
+  const user = await prisma.users.findUnique({ where: { email } });
+  // BR-01: email không tồn tại hay sai mật khẩu đều cùng một lỗi
+  if (!user || !(await bcrypt.compare(password, user.password_hash))) throw invalidCredentials();
+  // BR-02: chỉ báo vô hiệu hóa khi mật khẩu đã đúng
+  if (!user.is_active) throw new AppError(403, 'ACCOUNT_DISABLED', 'Tài khoản đã bị vô hiệu hóa');
+
+  const token = signToken(user);
+  return { token, expiresIn: tokenTtlSeconds(token), user: toUserDto(user) };
 };

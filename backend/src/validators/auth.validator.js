@@ -24,3 +24,18 @@ export const registerSchema = Joi.object({
     'any.only': 'Mật khẩu xác nhận không khớp',
   }),
 });
+
+export const loginSchema = Joi.object({
+  email: Joi.string().trim().lowercase().max(255).email({ tlds: { allow: false } }).required().messages({
+    'any.required': 'Vui lòng nhập email',
+    'string.empty': 'Vui lòng nhập email',
+    'string.email': 'Email không hợp lệ',
+    'string.max': 'Email tối đa 255 ký tự',
+  }),
+  password: Joi.string().min(8).max(16).required().messages({
+    'any.required': 'Vui lòng nhập mật khẩu',
+    'string.empty': 'Vui lòng nhập mật khẩu',
+    'string.min': 'Mật khẩu tối thiểu 8 ký tự',
+    'string.max': 'Mật khẩu tối đa 16 ký tự',
+  }),
+});
