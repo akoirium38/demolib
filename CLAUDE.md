@@ -77,6 +77,7 @@ Cài đặt lần đầu: `npm i` ở root, `backend/`, `frontend/`; `npx playwr
 | Một E2E | `npx playwright test e2e/smoke.spec.js -g "tên test"` |
 | Đồng bộ Prisma sau migration | `cd backend && npm run db:pull && npm run db:generate` |
 | Seed dữ liệu | `cd backend && npm run db:seed` |
+| Xóa dữ liệu test (sách/thể loại "API …"/"E2E …", tài khoản `@test.demolib.local`) | `cd backend && npm run db:cleanup-test` — E2E tự chạy qua `e2e/global-teardown.js`; chạy tay sau mỗi lần `runCollection` |
 | API test | Postman MCP `runCollection` — workspace `DemoLib` (`faf020ea-6e0d-42c9-9e17-53b80d4f14aa`), env `DemoLib Local` |
 
 Ghi chú kỹ thuật:

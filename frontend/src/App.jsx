@@ -7,6 +7,7 @@ import LoginPage from './pages/LoginPage'
 import DashboardPage from './pages/DashboardPage'
 import ProfilePage from './pages/ProfilePage'
 import CategoriesPage from './pages/CategoriesPage'
+import AddBookPage from './pages/AddBookPage'
 
 function HomePage() {
   return (
@@ -43,6 +44,10 @@ function Header() {
             </Link>
             <Link to="/categories" className="text-sm text-slate-700 hover:text-indigo-600">
               Thể loại
+            </Link>
+            {/* Tạm thời; chuyển thành nút "Thêm Sách Mới" ở trang danh sách sách khi có 3.6 */}
+            <Link to="/books/new" className="text-sm text-slate-700 hover:text-indigo-600">
+              Thêm sách
             </Link>
           </>
         )}
@@ -99,6 +104,7 @@ export default function App() {
               <Route element={<ProtectedRoute roles={['LIBRARIAN', 'ADMIN']} />}>
                 <Route path="/dashboard" element={<DashboardPage />} />
                 <Route path="/categories" element={<CategoriesPage />} />
+                <Route path="/books/new" element={<AddBookPage />} />
               </Route>
               <Route path="*" element={<NotFoundPage />} />
             </Routes>

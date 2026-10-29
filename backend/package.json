@@ -10,7 +10,8 @@
     "db:pull": "prisma db pull",
     "db:generate": "prisma generate",
     "db:seed": "tsx prisma/seed.js",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "db:cleanup-test": "tsx scripts/cleanup-test-data.js"
   },
   "license": "UNLICENSED",
   "type": "module",

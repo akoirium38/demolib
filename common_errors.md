@@ -21,6 +21,11 @@ Ghi bởi `/learn-by-mistake`. Đọc trước khi bắt đầu tính năng mớ
 - **Nguyên nhân:** script lưu token bằng `pm.collectionVariables.set`, nhưng env **DemoLib Local** đã có sẵn biến `readerToken`, `adminToken` (rỗng). Environment được ưu tiên hơn collection variable → `{{readerToken}}` ra chuỗi rỗng.
 - **Cách sửa:** biến nào đã có trong env (`readerToken`, `librarianToken`, `adminToken`, `seedPassword`, `baseUrl`) thì ghi bằng `pm.environment.set`; biến riêng của collection thì đặt tên không trùng env.
 
+### Script Postman dùng `Intl` với `timeZone` ra giá trị rỗng (3.5 — 2.2.2 Thêm sách)
+- **Triệu chứng:** A-05b (năm hiện tại) nhận 400 do body có `"publishYear":,` (JSON hỏng); A-08b (năm sau) vẫn "pass" vì `Number('') + 1 = 1` cũng bị 400.
+- **Nguyên nhân:** `new Intl.DateTimeFormat('en', { timeZone: 'Asia/Ho_Chi_Minh', ... })` không chạy được trong sandbox `runCollection` → `{{currentYear}}` rỗng.
+- **Cách sửa:** tính giờ VN bằng offset cố định: `new Date(Date.now() + 7 * 3600 * 1000).getUTCFullYear()`; thêm assertion kiểm tra biến sinh ra hợp lệ để test không pass nhầm.
+
 ## Môi trường E2E
 
 ### Timeout một lần ngay sau khi đổi nhánh (3.4)

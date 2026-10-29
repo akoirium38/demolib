@@ -4,6 +4,7 @@ const reuse = !process.env.CI;
 
 export default defineConfig({
   testDir: './e2e',
+  globalTeardown: './e2e/global-teardown.js',
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
