@@ -5,6 +5,7 @@ import ProtectedRoute from './components/ProtectedRoute'
 import RegisterPage from './pages/RegisterPage'
 import LoginPage from './pages/LoginPage'
 import DashboardPage from './pages/DashboardPage'
+import ProfilePage from './pages/ProfilePage'
 
 function HomePage() {
   return (
@@ -42,6 +43,9 @@ function Header() {
         <div className="ml-auto flex items-center gap-4 text-sm">
           {user ? (
             <>
+              <Link to="/profile" className="text-slate-700 hover:text-indigo-600">
+                Hồ sơ
+              </Link>
               <span data-testid="current-user" className="text-slate-700">
                 {user.name}
               </span>
@@ -83,6 +87,9 @@ export default function App() {
               <Route path="/" element={<HomePage />} />
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/login" element={<LoginPage />} />
+              <Route element={<ProtectedRoute />}>
+                <Route path="/profile" element={<ProfilePage />} />
+              </Route>
               <Route element={<ProtectedRoute roles={['LIBRARIAN', 'ADMIN']} />}>
                 <Route path="/dashboard" element={<DashboardPage />} />
               </Route>

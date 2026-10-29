@@ -38,6 +38,12 @@ export function AuthProvider({ children }) {
     setUser(null)
   }, [])
 
-  const value = useMemo(() => ({ user, loading, login, logout }), [user, loading, login, logout])
+  // 2.1.3: cập nhật hồ sơ xong → đồng bộ tên trên header
+  const updateUser = useCallback((changes) => setUser((prev) => (prev ? { ...prev, ...changes } : prev)), [])
+
+  const value = useMemo(
+    () => ({ user, loading, login, logout, updateUser }),
+    [user, loading, login, logout, updateUser],
+  )
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
