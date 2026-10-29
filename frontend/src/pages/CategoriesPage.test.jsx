@@ -12,6 +12,11 @@ vi.mock('../api/auth', () => ({
   fetchMe: vi.fn(),
 }))
 
+vi.mock('../api/books', () => ({
+  fetchBooks: vi.fn(() => Promise.resolve({ data: [], meta: { page: 1, limit: 10, total: 0, totalPages: 0 } })),
+  createBook: vi.fn(),
+}))
+
 vi.mock('../api/categories', () => ({
   fetchCategories: vi.fn(),
   createCategory: vi.fn(),
@@ -154,6 +159,7 @@ describe('2.2.1 Thể loại — CategoriesPage', () => {
 
     expect(await screen.findByRole('heading', { name: 'Thư viện DemoLib' })).toBeInTheDocument()
     expect(screen.queryByRole('link', { name: 'Thể loại' })).not.toBeInTheDocument()
-    expect(fetchCategories).not.toHaveBeenCalled()
+    // Trang chủ (danh sách sách) có nạp thể loại cho bộ lọc, nhưng trang quản lý thể loại không được render
+    expect(screen.queryByRole('heading', { name: 'Thể loại sách' })).not.toBeInTheDocument()
   })
 })

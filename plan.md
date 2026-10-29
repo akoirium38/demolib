@@ -43,7 +43,7 @@
 - [x] 3.3 2.1.3 Hồ sơ cá nhân
 - [x] 3.4 2.2.1 Quản lý thể loại sách
 - [x] 3.5 2.2.2 Thêm sách mới
-- [ ] 3.6 2.2.3 Xem danh sách sách
+- [x] 3.6 2.2.3 Xem danh sách sách
 - [ ] 3.7 2.2.4 Xem chi tiết sách
 - [ ] 3.8 2.2.5 Sửa & xóa sách
 - [ ] 3.9 2.3.1 Mượn sách (Độc giả)

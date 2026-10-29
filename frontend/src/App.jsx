@@ -8,15 +8,7 @@ import DashboardPage from './pages/DashboardPage'
 import ProfilePage from './pages/ProfilePage'
 import CategoriesPage from './pages/CategoriesPage'
 import AddBookPage from './pages/AddBookPage'
-
-function HomePage() {
-  return (
-    <section className="py-10">
-      <h1 className="text-2xl font-semibold text-slate-900">Thư viện DemoLib</h1>
-      <p className="mt-2 text-slate-600">Hệ thống quản lý mượn trả sách.</p>
-    </section>
-  )
-}
+import BookListPage from './pages/BookListPage'
 
 function NotFoundPage() {
   return <p className="py-10 text-slate-600">Không tìm thấy trang.</p>
@@ -44,10 +36,6 @@ function Header() {
             </Link>
             <Link to="/categories" className="text-sm text-slate-700 hover:text-indigo-600">
               Thể loại
-            </Link>
-            {/* Tạm thời; chuyển thành nút "Thêm Sách Mới" ở trang danh sách sách khi có 3.6 */}
-            <Link to="/books/new" className="text-sm text-slate-700 hover:text-indigo-600">
-              Thêm sách
             </Link>
           </>
         )}
@@ -95,7 +83,7 @@ export default function App() {
           <Header />
           <main className="mx-auto max-w-6xl px-4">
             <Routes>
-              <Route path="/" element={<HomePage />} />
+              <Route path="/" element={<BookListPage />} />
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route element={<ProtectedRoute />}>

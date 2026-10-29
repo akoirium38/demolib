@@ -43,3 +43,39 @@ export const createBook = async ({ title, author, publishYear, isbn, categoryId,
     throw err;
   }
 };
+
+// Prisma `contains` không escape ký tự đại diện của LIKE → tự escape để "%"/"_" được tìm đúng nghĩa đen (EC-03)
+const escapeLike = (value) => value.replace(/[\\%_]/g, (c) => `\\${c}`);
+
+// BR-03: luôn sắp xếp phụ theo id để phân trang ổn định
+const ORDER_BY = {
+  title: [{ title: 'asc' }, { id: 'asc' }],
+  newest: [{ publish_year: 'desc' }, { id: 'asc' }],
+  popular: [{ borrow_count: 'desc' }, { id: 'asc' }],
+};
+
+// 2.2.3 — input đã qua listBooksQuerySchema (có giá trị mặc định)
+export const listBooks = async ({ q, categoryId, sort, page, limit }) => {
+  const where = { deleted_at: null };
+  if (categoryId) where.category_id = categoryId;
+  if (q) {
+    const pattern = { contains: escapeLike(q), mode: 'insensitive' };
+    where.OR = [{ title: pattern }, { author: pattern }];
+  }
+
+  const [books, total] = await Promise.all([
+    prisma.books.findMany({
+      where,
+      orderBy: ORDER_BY[sort],
+      skip: (page - 1) * limit,
+      take: limit,
+      include: includeCategory,
+    }),
+    prisma.books.count({ where }),
+  ]);
+
+  return {
+    data: books.map(toBookDto),
+    meta: { page, limit, total, totalPages: Math.ceil(total / limit) },
+  };
+};

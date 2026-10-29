@@ -69,3 +69,38 @@ export const createBookSchema = Joi.object({
     'number.max': `Số lượng tối đa ${MAX_QUANTITY}`,
   }),
 });
+
+export const BOOK_SORTS = ['title', 'newest', 'popular'];
+
+const pageRule = (label, max) =>
+  Joi.number()
+    .integer()
+    .min(1)
+    .max(max)
+    .messages({
+      'number.base': `${label} phải là số`,
+      'number.integer': `${label} phải là số nguyên`,
+      'number.min': `${label} phải lớn hơn hoặc bằng 1`,
+      'number.max': `${label} tối đa ${max}`,
+    });
+
+// 2.2.3 Xem danh sách sách (query string)
+export const listBooksQuerySchema = Joi.object({
+  q: Joi.string().trim().max(100).allow('').default('').messages({
+    'string.base': 'Từ khóa không hợp lệ',
+    'string.max': 'Từ khóa tối đa 100 ký tự',
+  }),
+  categoryId: Joi.number().integer().min(1).max(2147483647).empty('').messages({
+    'number.base': 'Thể loại không hợp lệ',
+    'number.integer': 'Thể loại không hợp lệ',
+    'number.min': 'Thể loại không hợp lệ',
+    'number.max': 'Thể loại không hợp lệ',
+  }),
+  sort: Joi.string()
+    .valid(...BOOK_SORTS)
+    .empty('')
+    .default('title')
+    .messages({ 'any.only': `Sắp xếp phải là một trong: ${BOOK_SORTS.join(', ')}`, 'string.base': 'Sắp xếp không hợp lệ' }),
+  page: pageRule('Trang', 1000000).empty('').default(1),
+  limit: pageRule('Số sách mỗi trang', 100).empty('').default(10),
+});

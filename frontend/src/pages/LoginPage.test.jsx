@@ -11,6 +11,12 @@ vi.mock('../api/auth', () => ({
   fetchMe: vi.fn(),
 }))
 
+vi.mock('../api/books', () => ({
+  fetchBooks: vi.fn(() => Promise.resolve({ data: [], meta: { page: 1, limit: 10, total: 0, totalPages: 0 } })),
+  createBook: vi.fn(),
+}))
+vi.mock('../api/categories', () => ({ fetchCategories: vi.fn(() => Promise.resolve([])) }))
+
 const renderAt = (path) => {
   window.history.pushState({}, '', path)
   return render(<App />)

@@ -14,7 +14,7 @@ vi.mock('../api/categories', () => ({
   updateCategory: vi.fn(),
   deleteCategory: vi.fn(),
 }))
-vi.mock('../api/books', () => ({ createBook: vi.fn() }))
+vi.mock('../api/books', () => ({ fetchBooks: vi.fn(), createBook: vi.fn() }))
 
 const LIBRARIAN = { id: '1', email: 'lib@demolib.local', name: 'Thủ Thư', role: 'LIBRARIAN' }
 const CATEGORIES = [

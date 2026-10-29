@@ -31,7 +31,8 @@ const login = async (page, email) => {
 const openAddBookAsLibrarian = async (page) => {
   await login(page, 'librarian@demolib.local');
   await expect(page).toHaveURL(/\/dashboard$/);
-  await page.getByRole('link', { name: 'Thêm sách' }).click();
+  await page.getByRole('link', { name: 'DemoLib', exact: true }).click();
+  await page.getByRole('link', { name: 'Thêm Sách Mới' }).click();
   await expect(page.getByRole('heading', { name: 'Thêm sách mới' })).toBeVisible();
 };
 
@@ -128,11 +129,11 @@ test('E-03 EC-06: ISBN trùng sách đang có → lỗi từ server dưới ô I
   await expect(page.getByLabel('ISBN (không bắt buộc)')).toHaveAttribute('aria-invalid', 'true');
 });
 
-test('E-04 EC-12: Reader mở /books/new → về trang chủ, không có link "Thêm sách"', async ({ page }) => {
+test('E-04 EC-12: Reader mở /books/new → về trang chủ, không có nút "Thêm Sách Mới"', async ({ page }) => {
   await login(page, 'reader1@demolib.local');
   await expect(page.getByTestId('current-user')).toBeVisible();
 
   await page.goto('/books/new');
   await expect(page).toHaveURL(/\/$/);
-  await expect(page.getByRole('link', { name: 'Thêm sách' })).toHaveCount(0);
+  await expect(page.getByRole('link', { name: 'Thêm Sách Mới' })).toHaveCount(0);
 });
