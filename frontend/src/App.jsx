@@ -6,6 +6,7 @@ import RegisterPage from './pages/RegisterPage'
 import LoginPage from './pages/LoginPage'
 import DashboardPage from './pages/DashboardPage'
 import ProfilePage from './pages/ProfilePage'
+import CategoriesPage from './pages/CategoriesPage'
 
 function HomePage() {
   return (
@@ -36,9 +37,14 @@ function Header() {
           DemoLib
         </Link>
         {user && user.role !== 'READER' && (
-          <Link to="/dashboard" className="text-sm text-slate-700 hover:text-indigo-600">
-            Dashboard
-          </Link>
+          <>
+            <Link to="/dashboard" className="text-sm text-slate-700 hover:text-indigo-600">
+              Dashboard
+            </Link>
+            <Link to="/categories" className="text-sm text-slate-700 hover:text-indigo-600">
+              Thể loại
+            </Link>
+          </>
         )}
         <div className="ml-auto flex items-center gap-4 text-sm">
           {user ? (
@@ -92,6 +98,7 @@ export default function App() {
               </Route>
               <Route element={<ProtectedRoute roles={['LIBRARIAN', 'ADMIN']} />}>
                 <Route path="/dashboard" element={<DashboardPage />} />
+                <Route path="/categories" element={<CategoriesPage />} />
               </Route>
               <Route path="*" element={<NotFoundPage />} />
             </Routes>
