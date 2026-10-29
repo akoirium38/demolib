@@ -12,3 +12,6 @@ Thumbs.db
 test-results/
 playwright-report/
 playwright/.cache/
+
+# Prisma client sinh ra (npm run db:generate)
+backend/src/generated/

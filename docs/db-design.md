@@ -1,6 +1,6 @@
 # Thiết kế cơ sở dữ liệu
 
-PostgreSQL trên Supabase, schema `public`. Migration viết bằng SQL thuần, chạy qua Supabase MCP `apply_migration`, lưu tại `backend/prisma/migrations-sql/` (hoặc `supabase/migrations/`), sau đó `prisma db pull` → `prisma generate`. **Không** dùng `prisma migrate`.
+PostgreSQL trên Supabase, schema `public`. Migration viết bằng SQL thuần, chạy qua Supabase MCP `apply_migration`, lưu tại `backend/sql/NNN_<tên>.sql`, sau đó `prisma db pull` → `prisma generate`. **Không** dùng `prisma migrate`.
 
 Quy ước: tên bảng/cột `snake_case` số nhiều; khóa chính `uuid` (`gen_random_uuid()`) cho dữ liệu nghiệp vụ, `integer identity` cho bảng danh mục nhỏ (`categories`, `fine_levels`); thời điểm `timestamptz` (UTC); "ngày" nghiệp vụ dùng `date` theo giờ Asia/Ho_Chi_Minh; tiền `numeric(12,0)` (VND).
 
@@ -289,7 +289,7 @@ Ràng buộc: `uq_fines_loan_reason UNIQUE (loan_id, reason)`; `chk_fines_paid`:
 
 | Bảng | Index | Phục vụ |
 |------|-------|---------|
-| `users` | `UNIQUE (lower(email))` | Đăng nhập, chống trùng (2.1.1, 2.1.2) |
+| `users` | `UNIQUE (email)` — tương đương `lower(email)` nhờ CHECK lowercase; dùng ràng buộc thường để Prisma nhận diện (`findUnique`) | Đăng nhập, chống trùng (2.1.1, 2.1.2) |
 | `users` | `(role, is_active)` | Lọc người dùng (2.6.1), dashboard |
 | `users` | GIN `pg_trgm` trên `name`, `email` | Tìm kiếm ILIKE (2.6.1) |
 | `categories` | `UNIQUE (lower(name))` | Chống trùng (2.2.1) |
@@ -317,7 +317,7 @@ Partial index và expression index không biểu diễn được đầy đủ tr
 
 | Mã | Quy tắc | Cơ chế | Luồng |
 |----|---------|--------|-------|
-| R-01 | Email duy nhất, lowercase | UNIQUE `lower(email)` + CHECK | 2.1.1 |
+| R-01 | Email duy nhất, lowercase | UNIQUE `email` + CHECK `email = lower(email)` | 2.1.1 |
 | R-02 | Bất biến số lượng: `total = available + borrowed + damaged + lost`, mọi bộ đếm ≥ 0 | CHECK `chk_books_quantity_balance` | 2.2.2, 2.2.5, 2.3.2, 2.4.2 |
 | R-03 | Chỉ xóa thể loại khi không còn sách chưa xóa | App kiểm tra + trigger `trg_categories_block_delete` (BEFORE DELETE, raise nếu tồn tại `books` có `category_id = OLD.id AND deleted_at IS NULL`); sách đã xóa mềm → `category_id` SET NULL | 2.2.1 |
 | R-04 | Chỉ xóa (mềm) sách khi không có đơn `PENDING/BORROWING/OVERDUE` | App kiểm tra trong transaction (`FOR UPDATE` dòng sách) | 2.2.5 |

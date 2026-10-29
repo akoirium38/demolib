@@ -63,7 +63,26 @@ Kế hoạch step-by-step từ Stage 2 trở đi nằm trong `plan.md`. Đọc `
 
 ## Lệnh thường dùng
 
-_Chưa có mã nguồn — cập nhật ở task 3.0.7 (dev server, build, lint, chạy toàn bộ test, chạy một test đơn lẻ cho unit/Playwright, chạy Postman collection)._
+Cài đặt lần đầu: `npm i` ở root, `backend/`, `frontend/`; `npx playwright install chromium`; copy `backend/.env.example` → `backend/.env`.
+
+| Việc | Lệnh |
+|------|------|
+| Backend dev (port 4000, tsx watch) | `cd backend && npm run dev` |
+| Frontend dev (port 5173, proxy `/api` → 4000) | `cd frontend && npm run dev` |
+| Build FE / lint FE | `cd frontend && npm run build` / `npm run lint` |
+| Unit test BE (Vitest + supertest) | `cd backend && npm test` |
+| Một file / một test BE | `npx vitest run tests/unit/app.test.js` / `npx vitest run -t "tên test"` |
+| Unit test FE (Vitest + Testing Library) | `cd frontend && npm test` |
+| E2E toàn bộ (tự bật BE + FE) | `npm run test:e2e` (ở root) |
+| Một E2E | `npx playwright test e2e/smoke.spec.js -g "tên test"` |
+| Đồng bộ Prisma sau migration | `cd backend && npm run db:pull && npm run db:generate` |
+| Seed dữ liệu | `cd backend && npm run db:seed` |
+| API test | Postman MCP `runCollection` — workspace `DemoLib` (`faf020ea-6e0d-42c9-9e17-53b80d4f14aa`), env `DemoLib Local` |
+
+Ghi chú kỹ thuật:
+- Prisma 7: generator `prisma-client` sinh TypeScript vào `backend/src/generated/prisma` (gitignored) → backend (JS ESM) chạy bằng `tsx`; import `../generated/prisma/client.ts`. Bắt buộc driver adapter `@prisma/adapter-pg`. URL cho CLI nằm trong `backend/prisma.config.js` (`DIRECT_URL`).
+- Giữ `prisma` và `@prisma/client` cùng phiên bản chính xác (npm `latest` có lúc trỏ tới bản RC).
+- Migration SQL: `backend/sql/NNN_<tên>.sql`, chạy bằng Supabase MCP `apply_migration`.
 
 ## Cấu trúc dự án
 

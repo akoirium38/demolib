@@ -1,0 +1,230 @@
+generator client {
+  provider            = "prisma-client"
+  output              = "../src/generated/prisma"
+  previewFeatures     = ["partialIndexes"]
+  importFileExtension = "ts"
+  moduleFormat        = "esm"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model books {
+  id                 String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title              String      @db.VarChar(100)
+  author             String      @db.VarChar(100)
+  publish_year       Int         @db.SmallInt
+  isbn               String?     @unique(map: "uq_books_isbn_active", where: raw("((deleted_at IS NULL) AND (isbn IS NOT NULL))")) @db.VarChar(13)
+  category_id        Int?
+  description        String      @db.VarChar(255)
+  total_quantity     Int
+  available_quantity Int         @default(0)
+  borrowed_quantity  Int         @default(0)
+  damaged_quantity   Int         @default(0)
+  lost_quantity      Int         @default(0)
+  borrow_count       Int         @default(0)
+  deleted_at         DateTime?   @db.Timestamptz(6)
+  created_at         DateTime    @default(now()) @db.Timestamptz(6)
+  updated_at         DateTime    @default(now()) @db.Timestamptz(6)
+  categories         categories? @relation(fields: [category_id], references: [id], onUpdate: NoAction)
+  loans              loans[]
+
+  @@index([author(ops: raw("gin_trgm_ops"))], map: "idx_books_author_trgm", type: Gin)
+  @@index([borrow_count(sort: Desc)], map: "idx_books_borrow_count", where: raw("(deleted_at IS NULL)"))
+  @@index([category_id], map: "idx_books_category_active", where: raw("(deleted_at IS NULL)"))
+  @@index([title(ops: raw("gin_trgm_ops"))], map: "idx_books_title_trgm", type: Gin)
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+/// This model contains an expression index which requires additional setup for migrations. Visit https://pris.ly/d/expression-indexes for more info.
+model categories {
+  id         Int      @id @default(autoincrement())
+  name       String   @db.VarChar(50)
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @db.Timestamptz(6)
+  books      books[]
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+/// This model contains an expression index which requires additional setup for migrations. Visit https://pris.ly/d/expression-indexes for more info.
+model fine_levels {
+  id           Int      @id @default(autoincrement())
+  name         String   @db.VarChar(25)
+  amount       Decimal  @db.Decimal(12, 0)
+  applied_date DateTime @default(dbgenerated("((now() AT TIME ZONE 'Asia/Ho_Chi_Minh'::text))::date")) @db.Date
+  created_at   DateTime @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime @default(now()) @db.Timestamptz(6)
+  fines        fines[]
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model fines {
+  id                              String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  seq                             BigInt          @unique @default(autoincrement())
+  code                            String?         @unique @default(dbgenerated("('F'::text || lpad((seq)::text, 6, '0'::text))")) @db.VarChar(10)
+  user_id                         String          @db.Uuid
+  loan_id                         String          @db.Uuid
+  return_request_id               String          @db.Uuid
+  reason                          fine_reason
+  fine_level_id                   Int?
+  fine_level_name                 String          @db.VarChar(25)
+  amount                          Decimal         @db.Decimal(12, 0)
+  note                            String?         @db.VarChar(500)
+  fine_date                       DateTime        @db.Date
+  status                          fine_status     @default(UNPAID)
+  payment_note                    String?         @db.VarChar(255)
+  payment_requested_at            DateTime?       @db.Timestamptz(6)
+  reject_reason                   String?         @db.VarChar(255)
+  rejected_at                     DateTime?       @db.Timestamptz(6)
+  paid_at                         DateTime?       @db.Timestamptz(6)
+  confirmed_by                    String?         @db.Uuid
+  created_by                      String          @db.Uuid
+  created_at                      DateTime        @default(now()) @db.Timestamptz(6)
+  updated_at                      DateTime        @default(now()) @db.Timestamptz(6)
+  users_fines_confirmed_byTousers users?          @relation("fines_confirmed_byTousers", fields: [confirmed_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users_fines_created_byTousers   users           @relation("fines_created_byTousers", fields: [created_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  fine_levels                     fine_levels?    @relation(fields: [fine_level_id], references: [id], onUpdate: NoAction)
+  loans                           loans           @relation(fields: [loan_id], references: [id], onUpdate: NoAction)
+  return_requests                 return_requests @relation(fields: [return_request_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users_fines_user_idTousers      users           @relation("fines_user_idTousers", fields: [user_id], references: [id], onUpdate: NoAction)
+
+  @@unique([loan_id, reason], map: "uq_fines_loan_reason")
+  @@index([confirmed_by], map: "idx_fines_confirmed_by")
+  @@index([created_by], map: "idx_fines_created_by")
+  @@index([fine_level_id], map: "idx_fines_fine_level")
+  @@index([paid_at], map: "idx_fines_paid_at", where: raw("(status = 'PAID'::fine_status)"))
+  @@index([return_request_id], map: "idx_fines_return_request")
+  @@index([status, created_at], map: "idx_fines_status_created")
+  @@index([user_id, status], map: "idx_fines_user_status")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model loans {
+  id                              String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id                         String           @db.Uuid
+  book_id                         String           @db.Uuid
+  status                          loan_status      @default(PENDING)
+  duration_days                   Int              @default(14) @db.SmallInt
+  requested_at                    DateTime         @default(now()) @db.Timestamptz(6)
+  borrow_date                     DateTime?        @db.Date
+  due_date                        DateTime?        @db.Date
+  extension_count                 Int              @default(0) @db.SmallInt
+  extended_at                     DateTime?        @db.Timestamptz(6)
+  confirmed_by                    String?          @db.Uuid
+  confirmed_at                    DateTime?        @db.Timestamptz(6)
+  reject_reason                   String?          @db.VarChar(255)
+  rejected_by                     String?          @db.Uuid
+  rejected_at                     DateTime?        @db.Timestamptz(6)
+  returned_at                     DateTime?        @db.Timestamptz(6)
+  return_condition                book_condition?
+  created_at                      DateTime         @default(now()) @db.Timestamptz(6)
+  updated_at                      DateTime         @default(now()) @db.Timestamptz(6)
+  fines                           fines[]
+  books                           books            @relation(fields: [book_id], references: [id], onUpdate: NoAction)
+  users_loans_confirmed_byTousers users?           @relation("loans_confirmed_byTousers", fields: [confirmed_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users_loans_rejected_byTousers  users?           @relation("loans_rejected_byTousers", fields: [rejected_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users_loans_user_idTousers      users            @relation("loans_user_idTousers", fields: [user_id], references: [id], onUpdate: NoAction)
+  return_requests                 return_requests?
+
+  @@unique([user_id, book_id], map: "uq_loans_user_book_active", where: raw("(status = ANY (ARRAY['PENDING'::loan_status, 'BORROWING'::loan_status, 'OVERDUE'::loan_status]))"))
+  @@index([book_id, status], map: "idx_loans_book_status")
+  @@index([borrow_date], map: "idx_loans_borrow_date")
+  @@index([confirmed_by], map: "idx_loans_confirmed_by")
+  @@index([rejected_by], map: "idx_loans_rejected_by")
+  @@index([requested_at], map: "idx_loans_requested_at")
+  @@index([returned_at], map: "idx_loans_returned_at")
+  @@index([status, due_date], map: "idx_loans_status_due")
+  @@index([user_id, status], map: "idx_loans_user_status")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model return_requests {
+  id           String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  loan_id      String                @unique(map: "uq_rr_loan_pending", where: raw("(status = 'PENDING'::return_request_status)")) @db.Uuid
+  status       return_request_status @default(PENDING)
+  requested_at DateTime              @default(now()) @db.Timestamptz(6)
+  condition    book_condition?
+  note         String?               @db.VarChar(500)
+  confirmed_by String?               @db.Uuid
+  confirmed_at DateTime?             @db.Timestamptz(6)
+  fines        fines[]
+  users        users?                @relation(fields: [confirmed_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  loans        loans                 @relation(fields: [loan_id], references: [id], onUpdate: NoAction)
+
+  @@index([confirmed_by], map: "idx_rr_confirmed_by")
+  @@index([confirmed_at], map: "idx_rr_confirmed_damaged_lost", where: raw("(condition = ANY (ARRAY['DAMAGED'::book_condition, 'LOST'::book_condition]))"))
+  @@index([loan_id], map: "idx_rr_loan")
+  @@index([status, requested_at], map: "idx_rr_status_requested")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model users {
+  id                              String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email                           String            @unique @db.VarChar(255)
+  password_hash                   String            @db.VarChar(255)
+  name                            String            @db.VarChar(50)
+  phone                           String?           @db.VarChar(15)
+  address                         String?           @db.VarChar(255)
+  role                            user_role         @default(READER)
+  is_active                       Boolean           @default(true)
+  created_at                      DateTime          @default(now()) @db.Timestamptz(6)
+  updated_at                      DateTime          @default(now()) @db.Timestamptz(6)
+  fines_fines_confirmed_byTousers fines[]           @relation("fines_confirmed_byTousers")
+  fines_fines_created_byTousers   fines[]           @relation("fines_created_byTousers")
+  fines_fines_user_idTousers      fines[]           @relation("fines_user_idTousers")
+  loans_loans_confirmed_byTousers loans[]           @relation("loans_confirmed_byTousers")
+  loans_loans_rejected_byTousers  loans[]           @relation("loans_rejected_byTousers")
+  loans_loans_user_idTousers      loans[]           @relation("loans_user_idTousers")
+  return_requests                 return_requests[]
+
+  @@index([email(ops: raw("gin_trgm_ops"))], map: "idx_users_email_trgm", type: Gin)
+  @@index([name(ops: raw("gin_trgm_ops"))], map: "idx_users_name_trgm", type: Gin)
+  @@index([role, is_active], map: "idx_users_role_active")
+}
+
+enum book_condition {
+  NORMAL
+  DAMAGED
+  LOST
+}
+
+enum fine_reason {
+  LATE
+  DAMAGED
+  LOST
+}
+
+enum fine_status {
+  UNPAID
+  PENDING
+  REJECTED
+  PAID
+}
+
+enum loan_status {
+  PENDING
+  BORROWING
+  OVERDUE
+  RETURNED
+  REJECTED
+}
+
+enum return_request_status {
+  PENDING
+  CONFIRMED
+}
+
+enum user_role {
+  READER
+  LIBRARIAN
+  ADMIN
+}

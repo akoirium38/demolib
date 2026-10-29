@@ -29,13 +29,13 @@
 
 ### Stage 3 — Implement
 **Thiết lập**
-- [ ] 3.0.1 `git init`, tạo nhánh `main`, `.gitignore`, `.env.example`
-- [ ] 3.0.2 Khởi tạo backend (Express, Prisma, Joi, JWT) + unit test framework
-- [ ] 3.0.3 Khởi tạo frontend (React, Tailwind, Axios, React Hook Form, Day.js, Recharts)
-- [ ] 3.0.4 Cài đặt & cấu hình Playwright
-- [ ] 3.0.5 Tạo workspace/environment Postman qua Postman MCP
-- [ ] 3.0.6 Viết migration SQL theo `docs/db-design.md`, chạy bằng Supabase MCP, đồng bộ Prisma, seed dữ liệu (tài khoản Admin/Librarian, thể loại mẫu)
-- [ ] 3.0.7 Cập nhật mục "Lệnh thường dùng" trong `CLAUDE.md`
+- [x] 3.0.1 `git init`, tạo nhánh `main`, `.gitignore`, `.env.example`
+- [x] 3.0.2 Khởi tạo backend (Express, Prisma, Joi, JWT) + unit test framework
+- [x] 3.0.3 Khởi tạo frontend (React, Tailwind, Axios, React Hook Form, Day.js, Recharts)
+- [x] 3.0.4 Cài đặt & cấu hình Playwright
+- [x] 3.0.5 Tạo workspace/environment Postman qua Postman MCP
+- [x] 3.0.6 Viết migration SQL theo `docs/db-design.md`, chạy bằng Supabase MCP, đồng bộ Prisma, seed dữ liệu (tài khoản Admin/Librarian, thể loại mẫu)
+- [x] 3.0.7 Cập nhật mục "Lệnh thường dùng" trong `CLAUDE.md`
 
 **Tính năng** (mỗi dòng = 1 nhánh, đủ các bước 1–9 ở trên)
 - [ ] 3.1 2.1.1 Đăng ký
