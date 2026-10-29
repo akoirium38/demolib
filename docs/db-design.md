@@ -350,7 +350,7 @@ Partial index và expression index không biểu diễn được đầy đủ tr
 
 | Bảng | Dữ liệu |
 |------|---------|
-| `users` | 1 `ADMIN` (`admin@demolib.local`), 1 `LIBRARIAN` (`librarian@demolib.local`), 2 `READER` — mật khẩu lấy từ env `SEED_PASSWORD` |
+| `users` | 1 `ADMIN` (`admin@demolib.local`), 1 `LIBRARIAN` (`librarian@demolib.local`), 2 `READER`, 1 `READER` bị vô hiệu hóa (`disabled@demolib.local`, `is_active = false` — dùng cho test 2.1.2 EC-05) — mật khẩu lấy từ env `SEED_PASSWORD` |
 | `categories` | Văn học, Khoa học, Công nghệ thông tin, Lịch sử, Thiếu nhi |
 | `fine_levels` | Trả muộn — 10.000; Hư hỏng nhẹ — 30.000; Hư hỏng nặng — 80.000; Mất sách — 150.000 |
 | `books` | ~15 sách mẫu thuộc các thể loại trên |

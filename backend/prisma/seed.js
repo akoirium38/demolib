@@ -10,6 +10,8 @@ const users = [
   { email: 'librarian@demolib.local', name: 'Nhân viên thư viện', role: 'LIBRARIAN' },
   { email: 'reader1@demolib.local', name: 'Nguyễn Văn An', role: 'READER', phone: '0901234567', address: 'Hà Nội' },
   { email: 'reader2@demolib.local', name: 'Trần Thị Bình', role: 'READER', phone: '0912345678', address: 'TP. Hồ Chí Minh' },
+  // Tài khoản bị vô hiệu hóa — test 2.1.2 EC-05
+  { email: 'disabled@demolib.local', name: 'Tài khoản bị khóa', role: 'READER', is_active: false },
 ];
 
 const categories = ['Văn học', 'Khoa học', 'Công nghệ thông tin', 'Lịch sử', 'Thiếu nhi'];

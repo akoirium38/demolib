@@ -12,9 +12,11 @@ export const validate = (schemas) => (req, res, next) => {
       convert: true,
     });
     if (error) {
-      details.push(
-        ...error.details.map((d) => ({ field: d.path.join('.'), message: d.message })),
-      );
+      // Mỗi field chỉ giữ lỗi đầu tiên (vd. confirmPassword rỗng vừa "empty" vừa "không khớp")
+      for (const d of error.details) {
+        const field = d.path.join('.');
+        if (!details.some((x) => x.field === field)) details.push({ field, message: d.message });
+      }
     } else if (part === 'query') {
       // Express 5: req.query là getter, không gán trực tiếp được
       Object.defineProperty(req, 'query', { value, writable: true, configurable: true });

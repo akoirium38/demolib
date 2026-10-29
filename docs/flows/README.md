@@ -46,7 +46,7 @@ Mỗi chức năng trong PRD Phần 2 có một file `docs/flows/<mã>-<slug>.md
 
 | HTTP | `code` mặc định | Khi nào |
 |------|-----------------|---------|
-| 400 | `VALIDATION_ERROR` | Joi validate thất bại (`details` liệt kê từng field) |
+| 400 | `VALIDATION_ERROR` | Joi validate thất bại (`details` liệt kê từng field, mỗi field tối đa 1 lỗi) |
 | 401 | `UNAUTHORIZED` | Thiếu/sai/hết hạn token, tài khoản bị vô hiệu hóa |
 | 403 | `FORBIDDEN` | Sai vai trò |
 | 404 | `NOT_FOUND` | Không tìm thấy tài nguyên (hoặc tài nguyên của người khác) |
