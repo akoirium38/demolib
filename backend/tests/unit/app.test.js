@@ -61,4 +61,9 @@ describe('validate middleware', () => {
     expect(res.status).toBe(400);
     expect(res.body.error.details[0].field).toBe('name');
   });
+
+  it('mỗi field chỉ trả một lỗi', async () => {
+    const res = await request(app).post('/b').send({ name: '' });
+    expect(res.body.error.details).toHaveLength(1);
+  });
 });

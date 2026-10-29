@@ -1,4 +1,6 @@
 import { BrowserRouter, Link, Route, Routes } from 'react-router-dom'
+import RegisterPage from './pages/RegisterPage'
+import LoginPage from './pages/LoginPage'
 
 function HomePage() {
   return (
@@ -22,11 +24,24 @@ export default function App() {
             <Link to="/" className="font-semibold text-indigo-600">
               DemoLib
             </Link>
+            <div className="ml-auto flex items-center gap-4 text-sm">
+              <Link to="/login" className="text-slate-700 hover:text-indigo-600">
+                Đăng nhập
+              </Link>
+              <Link
+                to="/register"
+                className="rounded-md bg-indigo-600 px-3 py-1.5 font-medium text-white hover:bg-indigo-700"
+              >
+                Đăng ký
+              </Link>
+            </div>
           </nav>
         </header>
         <main className="mx-auto max-w-6xl px-4">
           <Routes>
             <Route path="/" element={<HomePage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/login" element={<LoginPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </main>
